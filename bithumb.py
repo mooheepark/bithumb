@@ -6,8 +6,8 @@ import pandas as pd
 import numpy as np
 import schedule
 
-key = '52e0b79c17b52a0501cbcf00137560d4'
-secret = 'c274d68f9e2e236ab71478fdbe9b0cb3'
+key = ''
+secret = ''
 bithumb = pybithumb.Bithumb(key, secret)
 
 def get_ror(k=0.5):
