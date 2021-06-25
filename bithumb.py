@@ -9,9 +9,9 @@ import schedule
 key = ''
 secret = ''
 bithumb = pybithumb.Bithumb(key, secret)
-bot = telegram.Bot(token='')
+bot = telegram.Bot(token='921370813:AAEH296WqKKLrtkKGjwRiLvTQaUz5Sfx8ms')
 def job(text1):
-    bot.send_message(chat_id = , text=text1)
+    bot.send_message(chat_id = 1096591010, text=text1)
 job('Activating')
 def get_ror(k=0.5):
     df = pybithumb.get_ohlcv("BTC")
@@ -30,12 +30,12 @@ df1 = pd.DataFrame(columns = None)
 for k in np.arange(0.1, 1.0, 0.1):
     ror = get_ror(k)
     df1 = df1.append(pd.DataFrame([[k,ror]]))
-# print('Original k, ror:', df1)
 
 maxbenefit = max(df1.loc[:,1])
 maxks = df1.loc[df1[1] == maxbenefit, 0]
 maxk = maxks.iloc[0]
 job(maxk)
+
 # 목표가를 target으로 추출
 def get_target_price(ticker):
     df = pybithumb.get_ohlcv(ticker)
@@ -45,7 +45,6 @@ def get_target_price(ticker):
     yesterday_high = yesterday['high']
     yesterday_low = yesterday['low']
     target = today_open + (yesterday_high - yesterday_low) * maxk
-    # print('목표가:', target)
     return target
 
 def buy_crypto_currency(ticker):
@@ -54,35 +53,31 @@ def buy_crypto_currency(ticker):
     sell_price = orderbook['asks'][0]['price']   
     unit = krw/float(sell_price)
     bithumb.buy_market_order(ticker, unit)
-    # print('몇유닛사나:', unit)
 
 def sell_crypto_currency(ticker):
     unit = bithumb.get_balance(ticker)[0]
     bithumb.sell_market_order(ticker, unit)
-    # print('금일팔기 완료')
 
 def get_yesterday_ma5(ticker):
     df = pybithumb.get_ohlcv(ticker)
     close = df['close']
     ma = close.rolling(5).mean()
-    # print('5평가:', ma[-2])
     return ma[-2]
 
 now = datetime.datetime.now() # 현재 시간 추출
-mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1) # 현재시간에 1일을 더한것을 더한값 추출
+mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1) # 명일 00시 00분 00초 추출
+print(now)
+print(mid)
 ma5 = get_yesterday_ma5("BTC")
 target_price = get_target_price("BTC")
 
 while True:
-    bot = telegram.Bot(token='921370813:AAEH296WqKKLrtkKGjwRiLvTQaUz5Sfx8ms')
-    def job1():
-        bot.send_message(chat_id = 1096591010, text='While Activate')
-    
     try:
         now = datetime.datetime.now() # 현재 시간 추출
-        schedule.every(1).minutes.do(job1)
-        # print('try안:', now)
-        if mid < now < mid + datetime.delta(seconds=10): # 현재시간이 다음날 같은 시간전 10초일때
+        job('try안')
+        # job(now)
+        # 현재시간이 다음날 같은 시간전 10초일때
+        if mid < now < mid + datetime.timedelta(seconds=10):
             job('if실행됨')
             # 임의의 자정마다 최대k값 재 선정
             df1 = pd.DataFrame(columns = None)
@@ -95,7 +90,7 @@ while True:
             maxk = maxks.iloc[0]
 
             target_price = get_target_price("BTC")
-            mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1) # 현재시간에 1일을 더한것을 더한값 추출
+            mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1) # 명일 00시 00분 00초 추출
             ma5 = get_yesterday_ma5("BTC")
             sell_crypto_currency("BTC")
             job(maxk)
@@ -108,4 +103,5 @@ while True:
         
     except:
         print("에러 발생")        
+        job("에러발생")
     time.sleep(1)
