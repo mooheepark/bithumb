@@ -4,7 +4,6 @@ import datetime
 import telegram
 import pandas as pd
 import numpy as np
-import schedule
 
 key = ''
 secret = ''
@@ -61,13 +60,12 @@ def sell_crypto_currency(ticker):
 def get_yesterday_ma5(ticker):
     df = pybithumb.get_ohlcv(ticker)
     close = df['close']
-    ma = close.rolling(5).mean()
-    return ma[-2]
+    ma = close.rolling(3).mean()
+    return ma[-1]
 
 now = datetime.datetime.now() # 현재 시간 추출
 mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1) # 명일 00시 00분 00초 추출
-print(now)
-print(mid)
+
 ma5 = get_yesterday_ma5("BTC")
 target_price = get_target_price("BTC")
 
@@ -75,7 +73,7 @@ while True:
     try:
         now = datetime.datetime.now() # 현재 시간 추출
         job('try안')
-        # job(now)
+
         # 현재시간이 다음날 같은 시간전 10초일때
         if mid < now < mid + datetime.timedelta(seconds=10):
             job('if실행됨')
@@ -90,13 +88,16 @@ while True:
             maxk = maxks.iloc[0]
 
             target_price = get_target_price("BTC")
-            mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1) # 명일 00시 00분 00초 추출
+            mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(0.97) # 당일 11시 16분 00초 추출
             ma5 = get_yesterday_ma5("BTC")
             sell_crypto_currency("BTC")
             job(maxk)
             job(maxbenefit)
             unit = bithumb.get_balance('BTC')[0]
             job(unit)
+            job(ma5)
+            time.sleep(2)
+            job(target_price)
         current_price = pybithumb.get_current_price("BTC")
         if (current_price > target_price) and (current_price > ma5):
             buy_crypto_currency("BTC")
